@@ -8,14 +8,21 @@
     "license": "MIT",
     "babel": {
         "presets": [
-            ["env", {"targets": { "node": "8" }}]
+            [
+                "env",
+                {
+                    "targets": {
+                        "node": "8"
+                    }
+                }
+            ]
         ],
         "plugins": [
             "transform-object-rest-spread"
         ]
     },
     "name": "@pubcore/node-composition",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "composition of components served by express",
     "repository": {
         "type": "git",
@@ -50,6 +57,6 @@
         "chokidar": "^2.0.3"
     },
     "engines": {
-      "node": ">=8.11.1"
+        "node": ">=8.11.1"
     }
 }
