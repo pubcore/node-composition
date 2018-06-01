@@ -16,7 +16,7 @@ export default (config, requireComponent) => {
 			//do "require" on request, to reload, if cache has been deleted
 			app.use(
 				mapRoutePath(components[id]),
-				(req, res, next) => mapRouter(requireComponent(id).default, express)(req, res, next)
+				(...args) => mapRouter(requireComponent(id).default, express)(...args)
 			)
 		})
 	}else{
