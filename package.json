@@ -2,6 +2,7 @@
     "scripts": {
         "test": "mocha --require babel-register --require source-map-support --recursive",
         "build": "babel src --out-dir js",
+        "prepare": "npm run build",
         "watch": "babel --watch src --out-dir js"
     },
     "main": "js/index.js",

@@ -15,10 +15,14 @@ var _router = require('./lib/router');
 
 var _router2 = _interopRequireDefault(_router);
 
+var _merge = require('merge');
+
+var _merge2 = _interopRequireDefault(_merge);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (config, requireComponent) => {
-	const { components } = config,
+	const { components, componentDefault } = config,
 	      packages = Object.keys(components),
 	      mapRoutePath = ({ context_path }) => ':context_path(' + context_path + ')/?';
 
@@ -29,12 +33,12 @@ exports.default = (config, requireComponent) => {
 		require('./lib/pruneOnChange').default(packages);
 		packages.forEach(id => {
 			//do "require" on request, to reload, if cache has been deleted
-			_nodeServerDocker.app.use(mapRoutePath(components[id]), (...args) => (0, _router2.default)(requireComponent(id).default, _nodeServerDocker.express)(...args));
+			_nodeServerDocker.app.use(mapRoutePath(components[id]), (...args) => (0, _router2.default)((0, _merge2.default)(true, componentDefault, requireComponent(id).default), _nodeServerDocker.express)(...args));
 		});
 	} else {
 		packages.forEach(id => {
 			var component = requireComponent(id).default;
-			_nodeServerDocker.app.use(mapRoutePath(components[id]), (0, _router2.default)(component, _nodeServerDocker.express));
+			_nodeServerDocker.app.use(mapRoutePath(components[id]), (0, _router2.default)((0, _merge2.default)(true, componentDefault, component), _nodeServerDocker.express));
 		});
 	}
 
