@@ -27,15 +27,18 @@ Beside the webserver's yaml and config files (see prerequisites), there are 3 im
 #### Example composition
 Let's compose a "todo" component to manage a todo-list together with a calendar component:
 
-1. config.json (map request to components based on context-path)
+1. config.js (map request to components based on context-path)
 
-		{
-			"components":{
-				"@yourOrg/myTodoList":{
-					"context_path":"/todo"
+		'use strict'
+		exports.default = {
+			components:{
+				'@yourOrg/myTodoList':{
+					public:true,
+					context_path:'/todo'
 				},
-				"@yourOrg/calendar":{
-					"context_path":"/calendar"
+				'@yourOrg/calendar':{
+					public:true,
+					"context_path":'/calendar'
 				}
 			}
 		}
@@ -48,7 +51,7 @@ Let's compose a "todo" component to manage a todo-list together with a calendar 
 		'use strict'
 		const mapComposition = require('@pubcore/node-composition').default
 
-		mapComposition(require('./config.json'), id => require(id))
+		mapComposition(require('./config.js').default, id => require(id))
 
 A component package exports the mapping of URI sub-path to a [express middleware function](https://expressjs.com/en/guide/using-middleware.html):
 

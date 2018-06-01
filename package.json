@@ -54,7 +54,8 @@
     "dependencies": {
         "@pubcore/node-server-docker": "github:pubcore/node-server-docker",
         "basic-auth": "^2.0.0",
-        "chokidar": "^2.0.3"
+        "chokidar": "^2.0.3",
+        "merge": "^1.2.0"
     },
     "engines": {
         "node": ">=8.11.1"
