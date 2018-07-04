@@ -6,15 +6,15 @@ export default component => (...args) => {
 	var [req, ,next] = args,
 		{name, pass} = basicAuth(req) || {},
 		{accesscontrol} = component,
-		{login, reject} = accesscontrol || {}
+		{login} = accesscontrol || {}
 
-	if(!pass || !name){
-		return reject ? reject(...args) : http401(accesscontrol)(...args)
+	if(!login && !pass || !name){
+		return http401(accesscontrol)(...args)
 	}
-	login(name, pass).then(
+	login({...args, username:name, password:pass}).then(
 		//add user data to request
 		user => {
-			delete user.pass //security
+			delete user.password //security
 			req.user = user
 			next()
 		},

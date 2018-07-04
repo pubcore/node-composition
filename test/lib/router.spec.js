@@ -20,7 +20,7 @@ const config1 = { http:[{
 	}]},
 	config2 = {
 		accesscontrol:{
-			login: (name, pass) => new Promise((res)=>{res({name, pass})}),
+			login: ({username, password}) => new Promise((res)=>{res({username, password})}),
 			cancelLoginUri:'/accesscontrol/cancelLoginUri'
 		},
 		resources: () => new Promise(res => res({foo:'bar'})),
