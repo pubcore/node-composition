@@ -20,7 +20,7 @@ The purpose of this package is to support such a structure by configuration.
 A composition is a package consists of several configuration files.
 Beside the webserver's yaml and config files (see prerequisites), there are 3 importand files:  
 
-		config.json
+		config.js
 		package.json
 		server.js
 
