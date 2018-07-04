@@ -1,3 +1,7 @@
+## 1.3.0 2018-07-04
+* private components: remove reject callback
+* private components: login callback is required, if u-name or password is given
+
 ## 1.2.0 2018-06-01
 * introduced config property "componentDefault"
 
