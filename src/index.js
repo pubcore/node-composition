@@ -18,7 +18,7 @@ export default (config, requireComponent) => {
 			app.use(
 				mapRoutePath(components[id]),
 				(...args) => mapRouter(
-					merge(true, componentDefault, requireComponent(id).default),
+					merge(true, componentDefault, requireComponent(id).default, {id}),
 					express
 				)(...args)
 			)

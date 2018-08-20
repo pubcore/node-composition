@@ -54,7 +54,6 @@
     },
     "dependencies": {
         "@pubcore/node-server-docker": "^1.1.0",
-        "basic-auth": "^2.0.0",
         "chokidar": "^2.0.3",
         "merge": "^1.2.0"
     },

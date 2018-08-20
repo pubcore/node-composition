@@ -19,10 +19,11 @@ const config1 = { http:[{
 		public:true
 	}]},
 	config2 = {
-		accesscontrol:{
-			login: ({username, password}) => new Promise((res)=>{res({username, password})}),
-			cancelLoginUri:'/accesscontrol/cancelLoginUri'
-		},
+		login: (req, res, next) => new Promise(resolve => resolve(
+			req.headers.authorization ?
+				req.user = {username:'test-username', password:'pwxyz'}
+				: null
+		)).then(() => next(), err => next(err)),
 		resources: () => new Promise(res => res({foo:'bar'})),
 		http:[{...config1.http[0], 'public':false}]
 	}
@@ -58,19 +59,14 @@ describe('component router', () => {
 			res => expect(res).to.have.status(401), error
 		)
 	})
-	it('invokes a "login(uname, passw)" promise for private resources', () => {
+	it('invokes a "login" promise for private resources', () => {
 		return chai.request(app2).get('/foo').auth('test-username', 'p').send().then(
 			res => expect(res.text).to.contain('test-username')
 		)
 	})
 	it('removes passwort after login, for security reasons', () => {
-		return chai.request(app2).get('/foo').auth('tusr', 'pwxyz').send().then(
-			res => expect(res.text).to.contain('tusr').and.not.contain('pwxyz')
-		)
-	})
-	it('redirects to configured path, if basic auth dialog is canceled', () => {
-		return chai.request(app2).get('/foo').send().then(
-			res => expect(res.text).to.contain('/accesscontrol/cancelLoginUri')
+		return chai.request(app2).get('/foo').auth('test-username', 'pwxyz').send().then(
+			res => expect(res.text).to.contain('test-username').and.not.contain('pwxyz')
 		)
 	})
 	it('invokes a "resources" promise, if configured', () => {

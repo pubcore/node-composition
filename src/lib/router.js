@@ -1,29 +1,33 @@
-import http406 from './http406'
-import http405 from './http405'
-import basicAuth from './basicAuth'
 import loadResources from './loadResources'
 
 export default (component, express) => {
 	var router = express.Router(),
-		{http} = component
+		{http, login} = component
 	http.forEach(endpoint => {
 		var {routePath, map, method, accepted} = endpoint
-
+		router.all(routePath, loadResources(component))
 		if(
 			!component.public && endpoint.public === undefined
 			|| !endpoint.public
 		){
-			router.all(routePath, basicAuth(component))
+			router.all(routePath, login)
+			router.all(routePath, (req, res, next) => {
+				if(req.user){
+					delete req.user.password //security
+				}else{
+					res.status(401).send()
+				}
+				next()
+			})
 		}
-		router.all(routePath, loadResources(component))
 		router.all(
 			routePath,
 			(...args) => {
-				var [req] = args
-				return req.method !== method ?
-					http405(...args)
+				var [req, res] = args
+				return res.headersSent ? false : req.method !== method ?
+					res.status(405).send()
 					: !req.accepts(accepted) ?
-						http406(...args)
+						res.status(406).send()
 						: map(...args)
 			}
 		)
