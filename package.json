@@ -23,7 +23,7 @@
         ]
     },
     "name": "@pubcore/node-composition",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "composition of components served by express",
     "repository": {
         "type": "git",
