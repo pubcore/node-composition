@@ -1,3 +1,7 @@
+## 1.5.0 2018-10-19
+* add optional error handler middleware
+* add documentation
+
 ## 1.3.0 2018-07-04
 * private components: remove reject callback
 * private components: login callback is required, if u-name or password is given

@@ -9,23 +9,33 @@ const app = express(),
 	error = err => {throw err},
 	app2 = express()
 
-const config1 = { http:[{
-		routePath: '/foo',
-		map: (req, res) => res.send(
-			`Hello world! ${JSON.stringify([req.user, req.resources])}`
-		),
-		method: 'GET',
-		accepted: ['application/json'],
-		public:true
-	}]},
+const config1 = { http:[
+		{
+			routePath: '/foo',
+			map: (req, res) => res.send(
+				`Hello world! ${JSON.stringify([req.user, req.resources])}`
+			),
+			method: 'GET',
+			accepted: ['application/json'],
+			public:true
+		},
+		{
+			routePath: '/error',
+			map: (req, res, next) => {next('err')},
+			method: 'GET',
+			accepted: ['application/json'],
+			public:true
+		}
+	]},
 	config2 = {
+		error: (err, req, res, next) => next && res.send('error-callback'),
 		login: (req, res, next) => new Promise(resolve => resolve(
 			req.headers.authorization ?
 				req.user = {username:'test-username', password:'pwxyz'}
 				: null
 		)).then(() => next(), err => next(err)),
 		resources: () => new Promise(res => res({foo:'bar'})),
-		http:[{...config1.http[0], 'public':false}]
+		http:[{...config1.http[0], 'public':false},{...config1.http[1]}]
 	}
 app.use(router(config1, express))
 app2.use(router(config2, express))
@@ -72,6 +82,11 @@ describe('component router', () => {
 	it('invokes a "resources" promise, if configured', () => {
 		return chai.request(app2).get('/foo').auth('u', 'p').send().then(
 			res => expect(res.text).to.contain('"foo":"bar"')
+		)
+	})
+	it('supports error handler middleware', () => {
+		return chai.request(app2).get('/error').send().then(
+			res => expect(res.text).to.contain('error-callback')
 		)
 	})
 })

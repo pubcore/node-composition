@@ -24,6 +24,35 @@ Beside the webserver's yaml and config files (see prerequisites), there are 3 im
 		package.json
 		server.js
 
+#### Configuration options exported by config.js
+
+		export default {
+			componentDefault:{
+				//login middleware, required, if component is not public
+				login: (req, res, next) => {},
+
+				//optional middleware to load resources
+				resources: (req, res, next) => {},
+
+				//optional error handler middleware
+				error: (err, req, res, next) => {},
+
+				//if true, login is required
+				public: false
+			},
+			components: {
+				"@company/component-one":{
+					//component ID
+					id: "@company/component-one"
+
+					//context path used for express Router
+					context_path: "/basePathOfComponentOne"
+
+					//optional to define (overwrite) defaults, see "componentDefault" ...
+				}
+			}
+		}
+
 #### Example composition
 Let's compose a "todo" component to manage a todo-list together with a calendar component:
 

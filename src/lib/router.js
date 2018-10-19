@@ -2,7 +2,7 @@ import loadResources from './loadResources'
 
 export default (component, express) => {
 	var router = express.Router(),
-		{http, login} = component
+		{http, login, error} = component
 	http.forEach(endpoint => {
 		var {routePath, map, method, accepted} = endpoint
 		router.all(routePath, loadResources(component))
@@ -32,5 +32,6 @@ export default (component, express) => {
 			}
 		)
 	})
+	error && router.use(error)
 	return router
 }
