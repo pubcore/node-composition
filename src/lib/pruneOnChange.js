@@ -4,7 +4,7 @@ import chokidar from 'chokidar'
 export default packages => {
 	var {regExpressions, paths} =
 		packages.reduce((agr, id) => {
-			agr.paths.push('./node_modules/' + id + '/js/*.js')
+			agr.paths.push('./node_modules/' + id + '/js/**/*.js')
 			agr.regExpressions[id] = new RegExp('[\\/\\\\]' + id + '[\\/\\\\]')
 			return agr
 		}, {regExpressions:{}, paths:[]}),
