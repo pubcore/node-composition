@@ -82,26 +82,31 @@ Let's compose a "todo" component to manage a todo-list together with a calendar 
 
 		mapComposition(require('./config.js').default, id => require(id))
 
+### Example component
 A component package exports the mapping of URI sub-path to a [express middleware function](https://expressjs.com/en/guide/using-middleware.html):
 
-	//import express middleware functions
-	import list from './lib/getList'
-	import addItem from './lib/addItem'
+1. src/index.js
 
-	export default {
-		public:true,
-		http: [
-			{
-				routePath: '/list',
-				map: list,
-				method: 'GET',
-				accepted: ['text/plain']
-			},
-			{
-				routePath: '/list',
-				map: addItem,
-				method: 'POST',
-				accepted: ['application/json']
-			},
-		]
-	}
+		//import express middleware functions
+		import list from './lib/getList'
+		import addItem from './lib/addItem'
+
+		export default {
+			public:true,
+			http: [
+				{
+					routePath: '/list',
+					map: list,
+					method: 'GET',
+					accepted: ['text/plain']
+				},
+				{
+					routePath: '/list',
+					map: addItem,
+					method: 'POST',
+					accepted: ['application/json']
+				},
+			]
+		}
+
+2. optional "htdocs" directory contain some static files (e.g. imgage, css, js)
