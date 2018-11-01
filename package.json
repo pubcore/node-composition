@@ -55,7 +55,7 @@
     "dependencies": {
         "@pubcore/node-server-docker": "^1.4.0",
         "chokidar": "^2.0.4",
-        "merge": "^1.2.0"
+        "merge": "^1.2.1"
     },
     "engines": {
         "node": ">=8.11.1"
