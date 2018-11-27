@@ -20,6 +20,13 @@ const config1 = { http:[
 			public:true
 		},
 		{
+			routePath: '/foo',
+			map: (req, res) => res.send('POST succeeded'),
+			method: 'POST',
+			accepted: ['application/json'],
+			public:true
+		},
+		{
 			routePath: '/error',
 			map: (req, res, next) => {next('err')},
 			method: 'GET',
@@ -35,7 +42,7 @@ const config1 = { http:[
 				: null
 		)).then(() => next(), err => next(err)),
 		resources: () => new Promise(res => res({foo:'bar'})),
-		http:[{...config1.http[0], 'public':false},{...config1.http[1]}]
+		http:[{...config1.http[0], 'public':false},{...config1.http[2]}]
 	}
 app.use(router(config1, express))
 app2.use(router(config2, express))
@@ -49,13 +56,21 @@ describe('component router', () => {
 			}, error
 		)
 	})
+	it('support different methods for same path', () => {
+		return chai.request(app).post('/foo').send().then(
+			res => {
+				expect(res).to.have.status(200)
+				expect(res.text).to.contain('POST succeeded')
+			}, error
+		)
+	})
 	it('checks accept header', () => {
 		return chai.request(app).get('/foo').set('Accept', 'foo/bar').send().then(
 			res => expect(res).to.have.status(406), error
 		)
 	})
 	it('checks http method', () => {
-		return chai.request(app).post('/foo').send().then(
+		return chai.request(app).put('/foo').send().then(
 			res => expect(res).to.have.status(405), error
 		)
 	})
