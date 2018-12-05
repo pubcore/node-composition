@@ -1,0 +1,7 @@
+version: '3.7'
+
+services:
+  node-dev:
+    build:
+      context: .
+    image: pubcore/commposition-builder:1.0.0

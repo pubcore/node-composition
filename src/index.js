@@ -44,7 +44,7 @@ export default (config, requireComponent) => {
 			var component = requireComponent(id).default
 			app.use(
 				mapRoutePath(components[id]),
-				mapRouter(merge(true, componentDefault, component), express)
+				mapRouter(merge(true, componentDefault, component, {id}), express)
 			)
 		})
 	}
