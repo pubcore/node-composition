@@ -1,4 +1,4 @@
-## 1.7.0 2019-02-08
+## 1.8.0 2019-02-08
 * forward request object to optional "resources" function
 
 ## 1.6.0 2018-10-24
