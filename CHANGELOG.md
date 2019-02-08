@@ -1,5 +1,8 @@
+## 1.7.0 2019-02-08
+* forward request object to optional "resources" function
+
 ## 1.6.0 2018-10-24
-* add support of static files by a optional component's htdocs directory
+* add support of static files by optional component's htdocs directory
 
 ## 1.5.0 2018-10-19
 * add optional error handler middleware
