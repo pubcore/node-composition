@@ -3,7 +3,7 @@ export default component => (...args) => {
 		[req, ,next] = args
 	req.component = component
 	if(resources){
-		resources().then(
+		resources(req).then(
 			res => {
 				req.resources = res
 				next()

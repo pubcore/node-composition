@@ -29,11 +29,12 @@ Beside the webserver's yaml and config files (see prerequisites), there are 3 im
 		export default {
 			componentDefault:{
 				//login middleware, required, if component is not public
-				login: (req, res, next) => {},
+				login: (req, res, next) => req.user,
 
-				//optional middleware to load resources
-				resources: (req, res, next) => {},
-
+				//optional, function returning a promise, can be used to load
+				//arbitrary data saved in req.resources
+				resources: (req) => Promise
+				
 				//optional error handler middleware
 				error: (err, req, res, next) => {},
 
