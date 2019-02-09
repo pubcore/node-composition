@@ -1,6 +1,7 @@
 import loadResources from './loadResources'
+import express from 'express'
 
-export default (component, express) => {
+export default component => {
 	var router = express.Router(),
 		{http, login, error} = component,
 		methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false}

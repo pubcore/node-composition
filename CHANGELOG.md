@@ -1,3 +1,8 @@
+## 2.0.0 2019-02-09
+* change api: only express app (middleware function) is exported now
+* remove dependency to @pubcore/node-server-docker
+* update docs
+
 ## 1.8.0 2019-02-08
 * forward request object to optional "resources" function
 

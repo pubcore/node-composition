@@ -1,6 +1,6 @@
 ### HTTPS server, to map requests to functions of components
 Within the terminology of HTTP we do have _requests_ and _responses_.
-Given a response is just the value of a function of the corresponding request,
+Given a response is just a function of a request,
 this package provide the option to configure such functional mappings.
 
 In order to structure such functions the words "component" and "composition" are
@@ -12,19 +12,58 @@ A requested domain (on a specific port) is mapped to a composition.
 The purpose of this package is to support such a structure by configuration.
 
 #### Prerequisites
-* Latest release of docker installed and running
-* Knowledge how to compose stacks of docker containers
-* Web-server configuration done (see @pubcore/node-server-docker)
+* latest nodejs installed
+* latest npm installed
+* knowledge of middleware functions of expressjs webserver
 
-#### Content of composition's package directory
-A composition is a package consists of several configuration files.
-Beside the webserver's yaml and config files (see prerequisites), there are 3 importand files:  
+#### Example composition
+Let's compose a "todo" component to manage a todo-list together with a calendar component.  
+Composition's package directory consists of:
 
 		config.js
 		package.json
 		server.js
 
-#### Configuration options exported by config.js
+1. config.js (map request to components based on context-path)
+
+		'use strict'
+		//composition config
+		exports.default = {
+			//a composition is a set of components ...
+			components:{
+				'@yourOrg/myTodoList':{
+					public:true,
+					context_path:'/todo'
+				},
+				'@yourOrg/calendar':{
+					public:true,
+					"context_path":'/calendar'
+				}
+			}
+		}
+
+2. npm's package.json  
+
+		All component's packages used in composition are installed as dependency.  
+		(On local development systems this is not required for packages which has been cloned to local, if it's directory are bound into docker container!)
+
+3. server.js
+
+		'use strict'
+		const createComposition = require('@pubcore/node-composition').default
+		const config = require('./config.js').default
+
+		//create a composition (expressjs application)
+		const composition = createComposition(config, id => require(id))
+
+		//because composition is a express middleware function,
+		//it can be used in context of any other expressjs application;
+		//for instance via app.use():
+
+		app.use('/', composition)
+
+
+##### config.js options
 
 		export default {
 			componentDefault:{
@@ -34,7 +73,7 @@ Beside the webserver's yaml and config files (see prerequisites), there are 3 im
 				//optional, function returning a promise, can be used to load
 				//arbitrary data saved in req.resources
 				resources: (req) => Promise
-				
+
 				//optional error handler middleware
 				error: (err, req, res, next) => {},
 
@@ -53,35 +92,6 @@ Beside the webserver's yaml and config files (see prerequisites), there are 3 im
 				}
 			}
 		}
-
-#### Example composition
-Let's compose a "todo" component to manage a todo-list together with a calendar component:
-
-1. config.js (map request to components based on context-path)
-
-		'use strict'
-		exports.default = {
-			components:{
-				'@yourOrg/myTodoList':{
-					public:true,
-					context_path:'/todo'
-				},
-				'@yourOrg/calendar':{
-					public:true,
-					"context_path":'/calendar'
-				}
-			}
-		}
-
-2. npm's package.json  
-	All component's packages used in composition are installed as dependency. On local development systems this is not required for packages which has been cloned to local and it's parent directory are bound into docker container!
-
-3. server.js
-
-		'use strict'
-		const mapComposition = require('@pubcore/node-composition').default
-
-		mapComposition(require('./config.js').default, id => require(id))
 
 ### Example component
 A component package exports the mapping of URI sub-path to a [express middleware function](https://expressjs.com/en/guide/using-middleware.html):
