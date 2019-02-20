@@ -1,3 +1,6 @@
+## 2.1.0 2019-02-20
+* merge global, component-sepcific config into component object (overwrites default)
+
 ## 2.0.0 2019-02-09
 * change api: only express app (middleware function) is exported now
 * remove dependency to @pubcore/node-server-docker
