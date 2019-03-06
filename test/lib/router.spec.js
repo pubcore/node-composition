@@ -2,6 +2,7 @@ import chai, {expect} from 'chai'
 import chaiHttp from 'chai-http'
 import express from 'express'
 import router from '../../src/lib/router'
+import http404 from '../../src/lib/http404'
 
 chai.use(chaiHttp)
 
@@ -42,10 +43,18 @@ const config1 = { http:[
 				: null
 		)).then(() => next(), err => next(err)),
 		resources: () => new Promise(res => res({foo:'bar'})),
-		http:[{...config1.http[0], 'public':false},{...config1.http[2]}]
+		http:[{...config1.http[0], 'public':false},{...config1.http[2]},
+			{
+				routePath: '/',
+				map: (req, res) => res.send('POST succeeded'),
+				method: 'POST',
+				accepted: ['application/json'],
+				public:false
+			}]
 	}
 app.use(router(config1, express))
 app2.use(router(config2, express))
+app2.use(http404)
 
 describe('component router', () => {
 	it('routes requests based on component config', () => {
@@ -71,6 +80,11 @@ describe('component router', () => {
 	})
 	it('checks http method', () => {
 		return chai.request(app).put('/foo').send().then(
+			res => expect(res).to.have.status(405), error
+		)
+	})
+	it('checks http method before login', () => {
+		return chai.request(app2).put('/').send().then(
 			res => expect(res).to.have.status(405), error
 		)
 	})
