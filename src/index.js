@@ -3,7 +3,6 @@ import http404 from './lib/http404'
 import route from './lib/router'
 import merge from 'merge'
 import fs from 'fs'
-import {dirname} from 'path'
 
 export default (config, requireComponent) => {
 	const {components, componentDefault} = config,

@@ -26,7 +26,7 @@ const config = {
 	testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'index.js')
 
 app.use(router)
-before(done => setTimeout(() => done(), 250))
+before(done => setTimeout(() => done(), 100))
 describe('compose components by configuration', () => {
 	after(() => replace({files:testFile, from:/number one/g, to:'one'}))
 	it('serves requests for some configured component functions', () =>
@@ -47,7 +47,7 @@ describe('compose components by configuration', () => {
 	it('reloads modules in development mode, if corresponding js file changed', () =>
 		chai.request(app).get('/one/show').set('Accept', 'application/json').send().then(
 			() => replace({files:testFile, from:/one/g, to:'number one'}).then(
-				() => new Promise((res) => setTimeout(() => res(), 250)).then(
+				() => new Promise((res) => setTimeout(() => res(), 100)).then(
 					() => chai.request(app).get('/one/show').set('Accept', 'application/json').send().then(
 						res => expect(res.text).to.contain('number one')
 					)

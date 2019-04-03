@@ -1,17 +1,19 @@
 import chokidar from 'chokidar'
-import {resolve, dirname} from 'path'
+import  {dirname, resolve} from 'path'
 //beware: only use this in development mode
 //because synchonous functions must be used here ...
 export default (packages, requireComponent) => {
 	var {regExpressions, paths} =
 		packages.reduce((agr, id) => {
-			agr.paths.push(resolve(
-				dirname(requireComponent.resolve(id)), '**', '*.@(js|json)')
+			agr.paths.push(
+				resolve(dirname(requireComponent.resolve(id)), '**', '*.@(js|json)')
+					//chokidar paths with globs only support usage of slash
+					.replace(/\\/g, '/')
 			)
-			agr.regExpressions[id] = new RegExp('[\\/\\\\]' + id + '[\\/\\\\]')
+			agr.regExpressions[id] = new RegExp(id.replace(/\//, '[/\\\\]'))
 			return agr
 		}, {regExpressions:{}, paths:[]}),
-		watcher = chokidar.watch(paths, { usePolling:true, depth:4 })
+		watcher = chokidar.watch(paths, {depth:4})
 	logSynchronousUsageWarning(paths)
 	watcher.on('ready', () => {watcher.on('all', () => {
 		var reload = {}
