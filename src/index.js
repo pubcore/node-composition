@@ -3,13 +3,13 @@ import http404 from './lib/http404'
 import route from './lib/router'
 import merge from 'merge'
 import fs from 'fs'
+import {dirname} from 'path'
 
 export default (config, requireComponent) => {
 	const {components, componentDefault} = config,
 		packages = Object.keys(components),
 		mapPath = ({context_path}) => ':context_path(' + context_path + ')/?',
 		app = express()
-
 	app.use(express.json())
 	packages.forEach(id => {
 		var staticFilesPath = './node_modules/' + id + '/htdocs'
@@ -27,7 +27,7 @@ export default (config, requireComponent) => {
 
 	if(process.env.NODE_ENV === 'development') {
 		//to prune require.cache on change; load this package only in dev-mode
-		require('./lib/pruneOnChange').default(packages)
+		require('./lib/pruneOnChange').default(packages, requireComponent)
 		packages.forEach( id => { app.use(
 			mapPath(components[id]),
 			(...args) => route(
