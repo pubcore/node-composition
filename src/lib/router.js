@@ -19,9 +19,10 @@ export default component => {
 			next()
 		})
 		router[verb](routePath, loadResources(component))
+
 		if(
 			!component.public && endpoint.public === undefined
-			|| !endpoint.public
+			|| endpoint.public != undefined && !endpoint.public
 		){
 			router[verb](routePath, login)
 			router[verb](routePath, (req, res, next) => {
@@ -33,6 +34,7 @@ export default component => {
 				next()
 			})
 		}
+
 		router[verb](
 			routePath,
 			(...args) => {

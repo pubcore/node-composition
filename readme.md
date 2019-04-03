@@ -16,6 +16,27 @@ The purpose of this package is to support such a structure by configuration.
 * latest npm installed
 * knowledge of middleware functions of expressjs webserver
 
+#### features
+```
+compose components by configuration
+	✓ serves requests for configured component-one functions
+	✓ serves requests for configured second "component-two"
+	✓ requires a login middleware function, if component is private
+	✓ reloads modules in development mode, if corresponding js file changed
+
+component router
+	✓ routes requests based on component config
+	✓ support different methods for same path
+	✓ checks accept header
+	✓ checks http method
+	✓ checks http method before login
+	✓ responses "not found" for other paths
+	✓ requires authentication, if component or function is not public
+	✓ invokes a "login" promise for private resources
+	✓ removes passwort after login, for security reasons
+	✓ invokes a "resources" promise, if configured
+	✓ supports error handler middleware
+```
 #### Example composition
 Let's compose a "todo" component to manage a todo-list together with a calendar component.  
 Composition's package directory consists of:
