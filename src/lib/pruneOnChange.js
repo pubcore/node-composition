@@ -13,7 +13,7 @@ export default (packages, requireComponent) => {
 			agr.regExpressions[id] = new RegExp(id.replace(/\//, '[/\\\\]'))
 			return agr
 		}, {regExpressions:{}, paths:[]}),
-		watcher = chokidar.watch(paths, {depth:4})
+		watcher = chokidar.watch(paths, {depth:4,usePolling:true})
 	logSynchronousUsageWarning(paths)
 	watcher.on('ready', () => {watcher.on('all', () => {
 		var reload = {}
