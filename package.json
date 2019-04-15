@@ -55,7 +55,7 @@
     },
     "dependencies": {
         "@pubcore/node-server-docker": "^1.4.1",
-        "chokidar": "^2.1.2",
+        "chokidar": "^2.1.5",
         "express": "^4.16.4",
         "merge": "^1.2.1"
     },
