@@ -1,8 +1,11 @@
-import chokidar from 'chokidar'
-import  {dirname, resolve} from 'path'
+'use strict'
+
+const chokidar = require('chokidar'),
+	{dirname, resolve} = require('path')
+
 //beware: only use this in development mode
 //because synchonous functions must be used here ...
-export default (packages, requireComponent) => {
+exports.default = (packages, requireComponent) => {
 	var {regExpressions, paths} =
 		packages.reduce((agr, id) => {
 			agr.paths.push(

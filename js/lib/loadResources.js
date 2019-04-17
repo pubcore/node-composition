@@ -1,4 +1,6 @@
-export default component => (...args) => {
+'use strict'
+
+exports.default = component => (...args) => {
 	var {resources} = component,
 		[req, ,next] = args
 	req.component = component

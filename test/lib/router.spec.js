@@ -1,10 +1,9 @@
-import chai, {expect} from 'chai'
-import chaiHttp from 'chai-http'
-import express from 'express'
-import router from '../../src/lib/router'
-import http404 from '../../src/lib/http404'
+'use strict'
 
-chai.use(chaiHttp)
+const {expect, request} = require('chai').use(require('chai-http')),
+	express = require('express'),
+	router = require('../../js/lib/router').default,
+	http404 = require('../../js/lib/http404').default
 
 const app = express(),
 	error = err => {throw err},
@@ -58,7 +57,7 @@ app2.use(http404)
 
 describe('component router', () => {
 	it('routes requests based on component config', () => {
-		return chai.request(app).get('/foo').send().then(
+		return request(app).get('/foo').send().then(
 			res => {
 				expect(res).to.have.status(200)
 				expect(res.text).to.contain('world')
@@ -66,7 +65,7 @@ describe('component router', () => {
 		)
 	})
 	it('support different methods for same path', () => {
-		return chai.request(app).post('/foo').send().then(
+		return request(app).post('/foo').send().then(
 			res => {
 				expect(res).to.have.status(200)
 				expect(res.text).to.contain('POST succeeded')
@@ -74,47 +73,47 @@ describe('component router', () => {
 		)
 	})
 	it('checks accept header', () => {
-		return chai.request(app).get('/foo').set('Accept', 'foo/bar').send().then(
+		return request(app).get('/foo').set('Accept', 'foo/bar').send().then(
 			res => expect(res).to.have.status(406), error
 		)
 	})
 	it('checks http method', () => {
-		return chai.request(app).put('/foo').send().then(
+		return request(app).put('/foo').send().then(
 			res => expect(res).to.have.status(405), error
 		)
 	})
 	it('checks http method before login', () => {
-		return chai.request(app2).put('/').send().then(
+		return request(app2).put('/').send().then(
 			res => expect(res).to.have.status(405), error
 		)
 	})
 	it('responses "not found" for other paths', () => {
-		return chai.request(app).get('/sldl').send().then(
+		return request(app).get('/sldl').send().then(
 			res => expect(res).to.have.status(404), error
 		)
 	})
 	it('requires authentication, if component or function is not public', () => {
-		return chai.request(app2).get('/foo').send().then(
+		return request(app2).get('/foo').send().then(
 			res => expect(res).to.have.status(401), error
 		)
 	})
 	it('invokes a "login" promise for private resources', () => {
-		return chai.request(app2).get('/foo').auth('test-username', 'p').send().then(
+		return request(app2).get('/foo').auth('test-username', 'p').send().then(
 			res => expect(res.text).to.contain('test-username')
 		)
 	})
 	it('removes passwort after login, for security reasons', () => {
-		return chai.request(app2).get('/foo').auth('test-username', 'pwxyz').send().then(
+		return request(app2).get('/foo').auth('test-username', 'pwxyz').send().then(
 			res => expect(res.text).to.contain('test-username').and.not.contain('pwxyz')
 		)
 	})
 	it('invokes a "resources" promise, if configured', () => {
-		return chai.request(app2).get('/foo').auth('u', 'p').send().then(
+		return request(app2).get('/foo').auth('u', 'p').send().then(
 			res => expect(res.text).to.contain('"foo":"bar"')
 		)
 	})
 	it('supports error handler middleware', () => {
-		return chai.request(app2).get('/error').send().then(
+		return request(app2).get('/error').send().then(
 			res => expect(res.text).to.contain('error-callback')
 		)
 	})

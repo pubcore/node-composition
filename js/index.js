@@ -1,10 +1,12 @@
-import express from 'express'
-import http404 from './lib/http404'
-import route from './lib/router'
-import merge from 'merge'
-import fs from 'fs'
+'use strict'
 
-export default (config, requireComponent) => {
+const express = require('express'),
+	http404 = require('./lib/http404').default,
+	route = require('./lib/router').default,
+	merge = require('merge'),
+	fs = require('fs')
+
+exports.default = (config, requireComponent) => {
 	const {components, componentDefault} = config,
 		packages = Object.keys(components),
 		mapPath = ({context_path}) => ':context_path(' + context_path + ')/?',

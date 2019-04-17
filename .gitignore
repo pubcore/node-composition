@@ -4,4 +4,4 @@ yarn-error.log*
 node_modules/
 !test/lib/node_modules
 .npm
-js
+.nyc_output

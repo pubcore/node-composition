@@ -1,7 +1,9 @@
-import loadResources from './loadResources'
-import express from 'express'
+'use strict'
 
-export default component => {
+const loadResources = require('./loadResources').default,
+	express = require('express')
+
+exports.default = component => {
 	var router = express.Router(),
 		{http, login, error} = component,
 		methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false}

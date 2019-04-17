@@ -1,27 +1,9 @@
 {
     "scripts": {
-        "test": "mocha --exit --require babel-register --require source-map-support --recursive",
-        "build": "babel src --out-dir js",
-        "prepare": "npm run build",
-        "watch": "babel --watch src --out-dir js"
+        "test": "nyc --reporter=text mocha --exit --recursive"
     },
     "main": "js/index.js",
     "license": "MIT",
-    "babel": {
-        "presets": [
-            [
-                "env",
-                {
-                    "targets": {
-                        "node": "8"
-                    }
-                }
-            ]
-        ],
-        "plugins": [
-            "transform-object-rest-spread"
-        ]
-    },
     "name": "@pubcore/node-composition",
     "version": "2.2.0",
     "description": "composition of components served by express",
@@ -42,9 +24,6 @@
     },
     "homepage": "https://github.com/pubcore/node-composition-local#readme",
     "devDependencies": {
-        "babel-cli": "^6.26.0",
-        "babel-plugin-transform-object-rest-spread": "^6.26.0",
-        "babel-preset-env": "^1.7.0",
         "chai": "^4.2.0",
         "chai-http": "^4.2.1",
         "eslint": "^4.19.1",
