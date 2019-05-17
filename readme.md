@@ -23,6 +23,8 @@ compose components by configuration
 	✓ serves requests for configured second "component-two"
 	✓ requires a login middleware function, if component is private
 	✓ reloads modules in development mode, if corresponding js file changed
+	✓ supports CORS - CrossOriginResourceSharing by config (allowedOrigins)
+	✓ sends CSP - content-security-policy - HTTP header, if configured
 
 component router
 	✓ routes requests based on component config
@@ -84,7 +86,7 @@ Composition's package directory consists of:
 		app.use('/', composition)
 
 
-##### config.js options
+##### config.js options, example
 
 		export default {
 			componentDefault:{
@@ -111,6 +113,14 @@ Composition's package directory consists of:
 
 					//optional to define (overwrite) defaults, see "componentDefault" ...
 				}
+			},
+			accesscontrol:{
+				//see https://developer.mozilla.org/en-US/docs/Glossary/CORS
+				//CORS headers are responded for requests send from sites of following
+				allowedOrigins: ["https://foo.net"],
+
+				//see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+				contentSecurityPolicy: "default-src 'self' data:; script-src 'self' font-src https:; style-src 'unsafe-inline' https:;"
 			}
 		}
 

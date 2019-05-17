@@ -17,6 +17,10 @@ const config = {
 		},
 		componentDefault:{
 			public:true
+		},
+		accesscontrol:{
+			allowedOrigins:['https://foo.net'],
+			contentSecurityPolicy:'default-src \'self\''
 		}
 	},
 	router = compose(config, require),
@@ -51,6 +55,19 @@ describe('compose components by configuration', () => {
 					)
 				)
 			)
+		)
+	)
+	it('supports CORS - CrossOriginResourceSharing by config (allowedOrigins)', () =>
+		request(app).get('/one').set('Origin', 'https://foo.net').send().then(
+			res => expect(res.header).to.include({
+				'access-control-allow-credentials':'true',
+				'access-control-allow-origin':'https://foo.net'
+			})
+		)
+	)
+	it('sends CSP - Content Security Policy header, if configured', () =>
+		request(app).get('/one').send().then(
+			res => expect(res.header).to.include({'content-security-policy':'default-src \'self\''})
 		)
 	)
 })
