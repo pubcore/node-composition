@@ -24,7 +24,8 @@ compose components by configuration
 	✓ requires a login middleware function, if component is private
 	✓ reloads modules in development mode, if corresponding js file changed
 	✓ supports CORS - CrossOriginResourceSharing by config (allowedOrigins)
-	✓ sends CSP - content-security-policy - HTTP header, if configured
+	✓ sends CSP (Content-Security-Polcy) HTTP header, if configured
+	✓ offers req.cookies object, if there are cookies
 
 component router
 	✓ routes requests based on component config

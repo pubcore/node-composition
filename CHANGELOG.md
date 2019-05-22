@@ -1,3 +1,6 @@
+## 2.5.0 2019-05-22
+* add req.cookies object, if request cookies exists
+
 ## 2.4.0 2019-05-17
 * add Content Security Policy (CSP) support
 * add Cross Origin Resource Sharing (CORS) support
