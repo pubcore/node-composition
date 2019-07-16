@@ -25,19 +25,19 @@
     "homepage": "https://github.com/pubcore/node-composition-local#readme",
     "devDependencies": {
         "chai": "^4.2.0",
-        "chai-http": "^4.2.1",
-        "eslint": "^4.19.1",
+        "chai-http": "^4.3.0",
+        "eslint": "^6.0.1",
         "eslint-plugin-mocha": "^5.3.0",
-        "mocha": "^5.2.0",
-        "nyc": "^13.3.0",
+        "mocha": "^6.1.4",
+        "nyc": "^14.1.1",
         "replace-in-file": "^3.4.4"
     },
     "dependencies": {
         "@pubcore/node-server-docker": "^1.4.1",
-        "chokidar": "^2.1.5",
+        "chokidar": "^2.1.6",
         "cookie": "^0.4.0",
         "cors": "^2.8.5",
-        "express": "^4.16.4",
+        "express": "^4.17.1",
         "merge": "^1.2.1"
     },
     "engines": {
