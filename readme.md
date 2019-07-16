@@ -25,7 +25,7 @@ compose components by configuration
 	✓ reloads modules in development mode, if corresponding js file changed
 	✓ supports CORS - CrossOriginResourceSharing by config (allowedOrigins)
 	✓ sends CSP (Content-Security-Polcy) HTTP header, if configured
-	✓ offers req.cookies object, if there are cookies
+	✓ offers req.cookies and req.cookiesByArray object, if there are cookies
 
 component router
 	✓ routes requests based on component config

@@ -70,7 +70,7 @@ describe('compose components by configuration', () => {
 			res => expect(res.header).to.include({'content-security-policy':'default-src \'self\''})
 		)
 	)
-	it('offers req.cookies object, if there are cookies', () =>
+	it('offers req.cookies and req.cookiesByArray object, if there are cookies', () =>
 		request(app).get('/three').set('Cookie', 'foo=bar; Jwt=one; Jwt=two;').then(
 			res => expect(res.text).to.include('bar').and.to.include('"Jwt":["one","two"]')
 		)
