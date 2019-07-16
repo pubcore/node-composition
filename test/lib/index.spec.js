@@ -2,8 +2,7 @@ const compose = require('../../js/index').default,
 	{expect, request} = require('chai').use(require('chai-http')),
 	express = require('express'),
 	replace = require('replace-in-file'),
-	{resolve} = require('path'),
-	{serialize} = require('cookie')
+	{resolve} = require('path')
 
 process.env.NODE_ENV = 'development'
 const config = {
@@ -72,8 +71,8 @@ describe('compose components by configuration', () => {
 		)
 	)
 	it('offers req.cookies object, if there are cookies', () =>
-		request(app).get('/three').set('Cookie', serialize('foo', 'bar')).then(
-			res => expect(res.text).to.include('bar')
+		request(app).get('/three').set('Cookie', 'foo=bar; Jwt=one; Jwt=two;').then(
+			res => expect(res.text).to.include('bar').and.to.include('"Jwt":["one","two"]')
 		)
 	)
 })
