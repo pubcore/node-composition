@@ -1,3 +1,6 @@
+## 2.6.0 2019-07-16
+* add req.cookiesByArray object to support duplicate cookie names
+
 ## 2.5.0 2019-05-22
 * add req.cookies object, if request cookies exists
 
