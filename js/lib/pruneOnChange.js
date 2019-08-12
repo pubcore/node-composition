@@ -13,7 +13,7 @@ exports.default = (packages, requireComponent) => {
 					//chokidar paths with globs only support usage of slash
 					.replace(/\\/g, '/')
 			)
-			agr.regExpressions[id] = new RegExp(id.replace(/\//, '[/\\\\]'))
+			agr.regExpressions[id] = new RegExp(id.replace(/\//, '[/\\\\]').replace(/@/,'@?'))
 			return agr
 		}, {regExpressions:{}, paths:[]}),
 		watcher = chokidar.watch(paths, {depth:4,usePolling:true})
