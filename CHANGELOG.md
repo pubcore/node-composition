@@ -1,3 +1,14 @@
+## 2.6.0 2019-07-16
+* add req.cookiesByArray object to support duplicate cookie names
+
+## 2.5.0 2019-05-22
+* add req.cookies object, if request cookies exists
+
+## 2.4.0 2019-05-17
+* add Content Security Policy (CSP) support
+* add Cross Origin Resource Sharing (CORS) support
+* remove transpile step (reduce dependencies)
+
 ## 2.1.0 2019-02-20
 * merge global, component-sepcific config into component object (overwrites default)
 

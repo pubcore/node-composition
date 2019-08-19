@@ -1,17 +1,24 @@
 'use strict'
-
 const express = require('express'),
 	http404 = require('./lib/http404').default,
 	route = require('./lib/router').default,
 	merge = require('merge'),
-	fs = require('fs')
+	fs = require('fs'),
+	cors = require('./lib/cors').default,
+	csp = require('./lib/csp').default,
+	cookies = require('./lib/cookies').default
 
 exports.default = (config, requireComponent) => {
-	const {components, componentDefault} = config,
+	const {components, componentDefault, accesscontrol} = config,
 		packages = Object.keys(components),
 		mapPath = ({context_path}) => ':context_path(' + context_path + ')/?',
 		app = express()
+
+	app.use(cors(accesscontrol))
+	app.use(csp(accesscontrol))
 	app.use(express.json())
+	app.use(cookies())
+	
 	packages.forEach(id => {
 		var staticFilesPath = './node_modules/' + id + '/htdocs'
 		try {
