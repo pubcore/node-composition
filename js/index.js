@@ -33,15 +33,17 @@ exports.default = (config, requireComponent) => {
 			mapPath(components[id]),
 			(...args) => route(
 				//do "require" on request, to reload, if cache has been deleted
-				merge(true, componentDefault, requireComponent(id).default, components[id], {id})
+				merge(true, componentDefault, requireComponent(id).default, components[id], {id}),
+				config
 			)(...args)
 		)})
 	}else{
 		packages.forEach( id => { app.use(
 			mapPath(components[id]),
-			route(merge(
-				true, componentDefault, requireComponent(id).default, components[id], {id}
-			))
+			route(
+				merge(true, componentDefault, requireComponent(id).default, components[id], {id}),
+				config
+			)
 		)})
 	}
 

@@ -3,7 +3,7 @@
 const loadResources = require('./loadResources').default,
 	express = require('express')
 
-exports.default = component => {
+exports.default = (component, config) => {
 	var router = express.Router(),
 		{http, login, error} = component,
 		methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false}
@@ -20,7 +20,7 @@ exports.default = component => {
 				res.status(405).send()
 			next()
 		})
-		router[verb](routePath, loadResources(component))
+		router[verb](routePath, loadResources(component, config))
 
 		if(
 			!component.public && endpoint.public === undefined

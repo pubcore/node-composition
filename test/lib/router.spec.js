@@ -7,7 +7,8 @@ const {expect, request} = require('chai').use(require('chai-http')),
 
 const app = express(),
 	error = err => {throw err},
-	app2 = express()
+	app2 = express(),
+	app3 = express()
 
 const config1 = { http:[
 		{
@@ -50,10 +51,28 @@ const config1 = { http:[
 				accepted: ['application/json'],
 				public:false
 			}]
+	},
+	config3 = {
+		error: (err, req, res, next) => next && res.send('error-callback'),
+		login: (req, res, next) => new Promise(resolve => resolve(
+			req.headers.authorization ?
+				req.user = {username:'test-username', password:'pwxyz'}
+				: null
+		)).then(() => next(), err => next(err)),
+		resources: req => new Promise(res => res({config: req.compositionConfig})),
+		http:[{...config1.http[0], 'public':false},{...config1.http[2]},
+			{
+				routePath: '/',
+				map: (req, res) => res.send('POST succeeded'),
+				method: 'POST',
+				accepted: ['application/json'],
+				public:false
+			}]
 	}
-app.use(router(config1, express))
-app2.use(router(config2, express))
+app.use(router(config1))
+app2.use(router(config2))
 app2.use(http404)
+app3.use(router(config3, {foo:'bar'}))
 
 describe('component router', () => {
 	it('routes requests based on component config', () => {
@@ -109,6 +128,11 @@ describe('component router', () => {
 	})
 	it('invokes a "resources" promise, if configured', () => {
 		return request(app2).get('/foo').auth('u', 'p').send().then(
+			res => expect(res.text).to.contain('"foo":"bar"')
+		)
+	})
+	it('invokes a "resources" promise, if configured and use config data', () => {
+		return request(app3).get('/foo').auth('u', 'p').send().then(
 			res => expect(res.text).to.contain('"foo":"bar"')
 		)
 	})
