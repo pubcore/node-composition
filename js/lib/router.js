@@ -20,7 +20,7 @@ exports.default = (component, config) => {
 				res.status(405).send()
 			next()
 		})
-		router[verb](routePath, loadResources(component, config))
+		router[verb](routePath, loadResources(component, config, endpoint))
 
 		if(
 			!component.public && endpoint.public === undefined
