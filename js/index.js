@@ -18,9 +18,11 @@ exports.default = (config, requireComponent) => {
 	app.use(csp(accesscontrol))
 	app.use(express.json())
 	app.use(cookies())
-	
+
 	packages.forEach(id => {
-		var staticFilesPath = './node_modules/' + id + '/htdocs'
+		var staticFilesPath = id.charAt(0) === '.' ?
+			'./htdocs'
+			: './node_modules/' + id + '/htdocs'
 		try {
 			if (fs.existsSync(staticFilesPath)) { app.use(
 				components[id].context_path,

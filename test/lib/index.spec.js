@@ -13,7 +13,8 @@ const config = {
 				context_path:'/three' ,
 				public:false,
 				login:(req, res, next) => {req.user = {}; next()}
-			}
+			},
+			'./js/index':{context_path:'/four'}
 		},
 		componentDefault:{
 			public:true
@@ -25,12 +26,16 @@ const config = {
 	},
 	router = compose(config, require),
 	app = express(),
-	testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'index.js')
+	testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'index.js'),
+	testFile2 = resolve(__dirname, 'js', 'lib', 'one.js')
 
 app.use(router)
 before(done => setTimeout(() => done(), 100))
 describe('compose components by configuration', () => {
-	after(() => replace({files:testFile, from:/number one/g, to:'one'}))
+	after(() => {
+		replace({files:testFile, from:/number two/g, to:'one'})
+		replace({files:testFile2, from:/number two/g, to:'one'})
+	})
 	it('serves requests for some configured component functions', () =>
 		request(app).get('/one/show').set('Accept', 'application/json').send().then(
 			res => expect(res.text).to.contain('one')
@@ -48,10 +53,21 @@ describe('compose components by configuration', () => {
 	)
 	it('reloads modules in development mode, if corresponding js file changed', () =>
 		request(app).get('/one/show').set('Accept', 'application/json').send().then(
-			() => replace({files:testFile, from:/one/g, to:'number one'}).then(
+			() => replace({files:testFile, from:/one/g, to:'number two'}).then(
 				() => new Promise((res) => setTimeout(() => res(), 100)).then(
 					() => request(app).get('/one/show').set('Accept', 'application/json').send().then(
-						res => expect(res.text).to.contain('number one')
+						res => expect(res.text).to.contain('number two')
+					)
+				)
+			)
+		)
+	)
+	it('reloads modules in development mode, if corresponding js file changed', () =>
+		request(app).get('/four/show').set('Accept', 'application/json').send().then(
+			() => replace({files:testFile2, from:/one/g, to:'number two'}).then(
+				() => new Promise((res) => setTimeout(() => res(), 100)).then(
+					() => request(app).get('/four/show').set('Accept', 'application/json').send().then(
+						res => expect(res.text).to.contain('number two')
 					)
 				)
 			)
