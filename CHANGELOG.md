@@ -1,3 +1,8 @@
+## 2.9.0 2020-01-26
+* support usage as dev-dependency of component packages
+* add compositionConfig to request object
+* add endpointConfig to request object
+
 ## 2.6.0 2019-07-16
 * add req.cookiesByArray object to support duplicate cookie names
 
