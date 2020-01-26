@@ -1,4 +1,4 @@
-### HTTPS server, to map requests to functions of components
+## Express middleware to map requests to functions of components
 Within the terminology of HTTP we do have _requests_ and _responses_.
 Given a response is just a function of a request,
 this package provide the option to configure such functional mappings.
@@ -14,9 +14,17 @@ The purpose of this package is to support such a structure by configuration.
 #### Prerequisites
 * latest nodejs installed
 * latest npm installed
-* knowledge of middleware functions of expressjs webserver
+* express application
 
-#### features
+#### Auto invalidation of require-cache in development mode
+Since nodejs caches required (imported) packages, changes within a file does
+not affect a running express server, it needs to be restared. This is expensive
+for continuously change-save-and-review cycles web-developers love.  
+This package implements __automatic invalidation of require-cache__ per
+component-package level. If a script file changes, all modules of corresponding
+component-package gets invalidated.
+
+#### Features test output
 ```
 compose components by configuration
 	✓ serves requests for configured component-one functions
@@ -40,116 +48,118 @@ component router
 	✓ invokes a "resources" promise, if configured
 	✓ supports error handler middleware
 ```
+
 #### Example composition
-Let's compose a "todo" component to manage a todo-list together with a calendar component.  
+Let's assume we compose a todo-list component together with a calendar component.  
 Composition's package directory consists of:
-
-		config.js
-		package.json
-		server.js
-
-1. config.js (map request to components based on context-path)
-
-		'use strict'
-		//composition config
-		exports.default = {
-			//a composition is a set of components ...
-			components:{
-				'@yourOrg/myTodoList':{
-					public:true,
-					context_path:'/todo'
-				},
-				'@yourOrg/calendar':{
-					public:true,
-					"context_path":'/calendar'
-				}
-			}
+```
+config.js
+package.json
+server.js
+```
+config.js (map request to components based on context-path)
+```
+//composition config
+module.exports = {
+	//a composition is a set of components ...
+	components:{
+		'@yourOrg/todo-list':{
+			public: true,
+			context_path: '/todo'
+		},
+		'@yourOrg/calendar':{
+			public: true,
+			context_path: '/calendar'
 		}
+	}
+}
+```
+npm's package.json
+```
+{
+	"name": "@yourScope/example-composition",
+	"version": "1.0.0",
+	"main": "server.js",
+	"dependencies": {
+		"express": "^4.17.1",
+		"@pubcore/node-composition": "^2.8.0",
+		"@yourScope/todo-list": "^0.1.0",
+		"@yourScope/calendar": "^0.1.0",
+	}
+}
+```
+server.js
+```
+const
+	express = require('express'),
+	app = express(),
+	compose = require('@pubcore/node-composition').default,
+	config = require('./config.js')
 
-2. npm's package.json  
+app.use('/', compose(config, id => require(id)))
+```
 
-		All component's packages used in composition are installed as dependency.  
-		(On local development systems this is not required for packages which has been cloned to local, if it's directory are bound into docker container!)
+###### Configuration options
+```
+module.exports = {
+	componentDefault:{
+		//if true, login (next option) is required
+		public: false
+		//login middleware, required, if component is not public
+		login: (req, res, next) => {next()},
 
-3. server.js
+		//optional, build arbitrary data added to req.resources
+		resources: async (req) => {}
 
-		'use strict'
-		const createComposition = require('@pubcore/node-composition').default
-		const config = require('./config.js').default
+		//optional error handler middleware
+		error: (err, req, res, next) => {},
+	},
+	components: {
+		"@company/component-one":{
+			//component ID
+			id: "@company/component-one"
 
-		//create a composition (expressjs application)
-		const composition = createComposition(config, id => require(id))
+			//context path used for express Router
+			context_path: "/basePathOfComponentOne"
 
-		//because composition is a express middleware function,
-		//it can be used in context of any other expressjs application;
-		//for instance via app.use():
-
-		app.use('/', composition)
-
-
-##### config.js options, example
-
-		export default {
-			componentDefault:{
-				//login middleware, required, if component is not public
-				login: (req, res, next) => req.user,
-
-				//optional, function returning a promise, can be used to load
-				//arbitrary data saved in req.resources
-				resources: (req) => Promise
-
-				//optional error handler middleware
-				error: (err, req, res, next) => {},
-
-				//if true, login is required
-				public: false
-			},
-			components: {
-				"@company/component-one":{
-					//component ID
-					id: "@company/component-one"
-
-					//context path used for express Router
-					context_path: "/basePathOfComponentOne"
-
-					//optional to define (overwrite) defaults, see "componentDefault" ...
-				}
-			},
-			accesscontrol:{
-				//see https://developer.mozilla.org/en-US/docs/Glossary/CORS
-				//CORS headers are responded for requests send from sites of following
-				allowedOrigins: ["https://foo.net"],
-
-				//see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
-				contentSecurityPolicy: "default-src 'self' data:; script-src 'self' font-src https:; style-src 'unsafe-inline' https:;"
-			}
+			//optional to define (overwrite) defaults, see "componentDefault" ...
 		}
+	},
+	accesscontrol:{
+		//see https://developer.mozilla.org/en-US/docs/Glossary/CORS
+		//CORS headers are responded for requests send from sites of following
+		allowedOrigins: ["https://foo.net"],
 
-### Example component
+		//see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+		contentSecurityPolicy: "default-src 'self' data:; script-src 'self' font-src https:; style-src 'unsafe-inline' https:;"
+	}
+}
+```
+
+#### Example component
 A component package exports the mapping of URI sub-path to a [express middleware function](https://expressjs.com/en/guide/using-middleware.html):
 
 1. src/index.js
-
-		//import express middleware functions
-		import list from './lib/getList'
-		import addItem from './lib/addItem'
-
-		export default {
-			public:true,
-			http: [
-				{
-					routePath: '/list',
-					map: list,
-					method: 'GET',
-					accepted: ['text/plain']
-				},
-				{
-					routePath: '/list',
-					map: addItem,
-					method: 'POST',
-					accepted: ['application/json']
-				},
-			]
-		}
-
+```
+//import express middleware functions
+import list from './lib/getList'
+import addItem from './lib/addItem'
+export default {
+	public:true,
+	http: [
+		{
+			routePath: '/list',
+			map: list,
+			method: 'GET',
+			accepted: ['text/plain']
+		},
+		{
+			routePath: '/list',
+			map: addItem,
+			method: 'POST',
+			accepted: ['application/json']
+		},
+	]
+}
+```
 2. optional "htdocs" directory contain some static files (e.g. imgage, css, js)
