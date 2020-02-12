@@ -132,6 +132,11 @@ module.exports = {
 
 		//see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 		contentSecurityPolicy: "default-src 'self' data:; script-src 'self' font-src https:; style-src 'unsafe-inline' https:;"
+	},
+	//optional
+	options:{
+		//optional
+		requestJsonLimit: '2mb' //default 100kb
 	}
 }
 ```

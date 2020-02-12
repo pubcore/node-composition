@@ -9,14 +9,15 @@ const express = require('express'),
 	cookies = require('./lib/cookies').default
 
 exports.default = (config, requireComponent) => {
-	const {components, componentDefault, accesscontrol} = config,
+	const {components, componentDefault, accesscontrol, options} = config,
+		{requestJsonLimit} = options||{},
 		packages = Object.keys(components),
 		mapPath = ({context_path}) => ':context_path(' + context_path + ')/?',
 		app = express()
 
 	app.use(cors(accesscontrol))
 	app.use(csp(accesscontrol))
-	app.use(express.json())
+	app.use(express.json({limit: requestJsonLimit||'100kb'}))
 	app.use(cookies())
 
 	packages.forEach(id => {
