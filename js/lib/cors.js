@@ -1,7 +1,7 @@
 'use strict'
 const cors = require('cors')
 
-exports.default = config => cors((req, callback) => {
+module.exports = config => cors((req, callback) => {
 	var origin = req.header('Origin'),
 		{allowedOrigins} = config || {}
 	callback(null, {

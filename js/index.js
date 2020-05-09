@@ -1,12 +1,12 @@
 'use strict'
 const express = require('express'),
-	http404 = require('./lib/http404').default,
-	route = require('./lib/router').default,
+	http404 = require('./lib/http404'),
+	route = require('./lib/router'),
 	merge = require('merge'),
 	fs = require('fs'),
-	cors = require('./lib/cors').default,
-	csp = require('./lib/csp').default,
-	cookies = require('./lib/cookies').default
+	cors = require('./lib/cors'),
+	csp = require('./lib/csp'),
+	cookies = require('./lib/cookies')
 
 exports.default = (config, requireComponent) => {
 	const {components, componentDefault, accesscontrol, options} = config,
@@ -38,7 +38,7 @@ exports.default = (config, requireComponent) => {
 
 	if(process.env.NODE_ENV === 'development') {
 		//to prune require.cache on change; load this package only in dev-mode
-		require('./lib/pruneOnChange').default(packages, requireComponent)
+		require('./lib/pruneOnChange')(packages, requireComponent)
 		packages.forEach( id => { app.use(
 			mapPath(components[id]),
 			(...args) => route(

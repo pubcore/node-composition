@@ -1,9 +1,9 @@
 'use strict'
 
-const loadResources = require('./loadResources').default,
+const loadResources = require('./loadResources'),
 	express = require('express')
 
-exports.default = (component, config) => {
+module.exports = (component, config) => {
 	var router = express.Router(),
 		{http, login, error} = component,
 		methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false}

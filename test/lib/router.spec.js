@@ -2,8 +2,8 @@
 
 const {expect, request} = require('chai').use(require('chai-http')),
 	express = require('express'),
-	router = require('../../js/lib/router').default,
-	http404 = require('../../js/lib/http404').default
+	router = require('../../js/lib/router'),
+	http404 = require('../../js/lib/http404')
 
 const app = express(),
 	error = err => {throw err},

@@ -1,6 +1,6 @@
 'use strict'
 
-exports.default = (component, config, endpoint) => (...args) => {
+module.exports = (component, config, endpoint) => (...args) => {
 	var {resources} = component,
 		[req, ,next] = args
 	req.component = component

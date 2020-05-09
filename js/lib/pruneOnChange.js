@@ -5,7 +5,7 @@ const chokidar = require('chokidar'),
 
 //beware: only use this in development mode
 //because synchonous functions must be used here ...
-exports.default = (packages, requireComponent) => {
+module.exports = (packages, requireComponent) => {
 	var {regExpressions, paths} =
 		packages.reduce((agr, id) => {
 			agr.paths.push(
