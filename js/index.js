@@ -3,15 +3,15 @@ const express = require('express'),
   http404 = require('./lib/http404'),
   route = require('./lib/router'),
   merge = require('merge'),
-  fs = require('fs'),
+  {existsSync, accessSync, constants:{R_OK}} = require('fs'),
+  {dirname, join} = require('path'),
   cors = require('./lib/cors'),
   csp = require('./lib/csp'),
   cookies = require('./lib/cookies')
 
-exports.default = (config, requireComponent) => {
+exports.default = (config, _require) => {
   const {components, componentDefault, accesscontrol, options} = config,
     {requestJsonLimit} = options||{},
-    packages = Object.keys(components),
     mapPath = ({context_path}) => ':context_path(' + context_path + ')/?',
     app = express()
 
@@ -20,38 +20,38 @@ exports.default = (config, requireComponent) => {
   app.use(express.json({limit: requestJsonLimit||'100kb'}))
   app.use(cookies())
 
-  packages.forEach(id => {
-    var staticFilesPath = id.charAt(0) === '.' ?
-      './htdocs'
-      : './node_modules/' + id + '/htdocs'
+  var validPackages = Object.entries(components).reduce((acc, [id, comp]) => {
     try {
-      if (fs.existsSync(staticFilesPath)) { app.use(
-        components[id].context_path,
-        express.static(staticFilesPath)
-      )}
-    } catch(err) {
-      //static files are optional
-      // eslint-disable-next-line no-console
-      console.log(`No static-files support for ${id} ("htdocs" directory not found)`)
+      var staticFilesPath = join( dirname(_require.resolve(id)), 'htdocs')
+      //htdocs is optional; if exists, it must be readable
+      if (existsSync(staticFilesPath)) {
+        accessSync(staticFilesPath, R_OK)
+        app.use(comp.context_path, express.static(staticFilesPath))
+      }
+      acc.push(id)
+    } catch (e) {
+      app.use(comp.context_path, (req, res) => res.status(500).send())
+      console.error(e)
     }
-  })
+    return acc
+  }, [])
 
   if(process.env.NODE_ENV === 'development') {
     //to prune require.cache on change; load this package only in dev-mode
-    require('./lib/pruneOnChange')(packages, requireComponent)
-    packages.forEach( id => { app.use(
+    require('./lib/pruneOnChange')(validPackages, _require)
+    validPackages.forEach( id => { app.use(
       mapPath(components[id]),
       (...args) => route(
         //do "require" on request, to reload, if cache has been deleted
-        merge(true, componentDefault, requireComponent(id).default, components[id], {id}),
+        merge(true, componentDefault, _require(id).default, components[id], {id}),
         config
       )(...args)
     )})
   }else{
-    packages.forEach( id => { app.use(
+    validPackages.forEach( id => { app.use(
       mapPath(components[id]),
       route(
-        merge(true, componentDefault, requireComponent(id).default, components[id], {id}),
+        merge(true, componentDefault, _require(id).default, components[id], {id}),
         config
       )
     )})
