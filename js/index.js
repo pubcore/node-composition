@@ -22,7 +22,7 @@ exports.default = (config, _require) => {
 
   var validPackages = Object.entries(components).reduce((acc, [id, comp]) => {
     try {
-      var staticFilesPath = join( dirname(_require.resolve(id)), 'htdocs')
+      var staticFilesPath = join( dirname(dirname(_require.resolve(id))), 'htdocs')
       //htdocs is optional; if exists, it must be readable
       if (existsSync(staticFilesPath)) {
         accessSync(staticFilesPath, R_OK)

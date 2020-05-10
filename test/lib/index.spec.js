@@ -28,7 +28,7 @@ describe('compose components by configuration', () => {
     },
     router = compose(config, require),
     app = express(),
-    testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'index.js'),
+    testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'js', 'index.js'),
     testFile2 = resolve(__dirname, 'js', 'lib', 'one.js')
   app.use(router)
 
@@ -108,7 +108,7 @@ describe('compose, if environment is in PRODUCTION mode', () => {
   var app, testFile
   beforeEach(() => {
     process.env.NODE_ENV = 'production'
-    testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'index.js')
+    testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'js', 'index.js')
     //since we have one "require" cache, delete potential loaded module ...
     delete require.cache[testFile]
     replace.sync({files:testFile, from:/number two/g, to:'one'})

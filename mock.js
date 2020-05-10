@@ -1,3 +1,5 @@
+'use strict'
+
 var enabled = false
 //tested several mock frameworks (mock-fs, proxyquire, rewiremock, rewire)
 //did not get it work in this case (mock sosme "fs" func. with runtime required modules)
