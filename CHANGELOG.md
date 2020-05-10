@@ -1,3 +1,8 @@
+## 2.11.0 2020-05-10
+* skip invalid components, log error and serve 500 if requested
+* set ```req.resources={}```, if resources promise rejects (log error in dev mode)
+* add optional ```options.requestJsonLimit``` (defaults to '100kb')
+
 ## 2.9.0 2020-01-26
 * support usage as dev-dependency of component packages
 * add compositionConfig to request object
