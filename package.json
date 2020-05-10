@@ -1,6 +1,7 @@
 {
     "scripts": {
-        "test": "nyc --reporter=text mocha --exit --recursive"
+        "test2": "mocha --exit --recursive",
+        "test": "nyc mocha --exit --recursive"
     },
     "main": "js/index.js",
     "license": "MIT",
