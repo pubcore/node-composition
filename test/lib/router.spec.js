@@ -8,7 +8,8 @@ const {expect, request} = require('chai').use(require('chai-http')),
 const app = express(),
   error = err => {throw err},
   app2 = express(),
-  app3 = express()
+  app3 = express(),
+  app4 = express()
 
 const config1 = { http:[
     {
@@ -67,12 +68,20 @@ const config1 = { http:[
         method: 'POST',
         accepted: ['application/json'],
         public:false
+      },
+      {
+        routePath: '/loadResourcesError',
+        map: (req, res) => res.send(req.resources),
+        method: 'GET',
+        accepted: ['application/json'],
+        public: true
       }]
   }
 app.use(router(config1))
 app2.use(router(config2))
 app2.use(http404)
-app3.use(router(config3, {foo:'bar'}))
+app3.use(router(config3, {foo:'bar'})),
+app4.use(router({...config3, resources:() => Promise.reject(new Error())}))
 
 describe('component router', () => {
   it('routes requests based on component config', () => {
@@ -134,6 +143,11 @@ describe('component router', () => {
   it('invokes a "resources" promise, if configured and use config data', () => {
     return request(app3).get('/foo').auth('u', 'p').send().then(
       res => expect(res.text).to.contain('"foo":"bar"')
+    )
+  })
+  it('it catches up failed "resources" promise', () => {
+    return request(app4).get('/loadResourcesError').send().then(
+      res => expect(res.text).to.contain('{}')
     )
   })
   it('supports error handler middleware', () => {
