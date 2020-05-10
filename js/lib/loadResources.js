@@ -10,10 +10,16 @@ module.exports = (component, config, endpoint) => (...args) => {
     resources(req).then(
       res => {
         req.resources = res
-        next()
       },
-      err => next(err)
-    )
+      (err) => {
+        //responsibility for loading resources is external, on error server empty object
+        //no console log in PROD, since loading resources is/can be per request
+        if(process.env.NODE_ENV === 'development'){
+          console.error(err)
+        }
+        req.resources = {}
+      }
+    ).finally(() => next())
   }else{
     next()
   }
