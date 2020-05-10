@@ -11,14 +11,12 @@ module.exports = {
     ],
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true
-        }
+        "ecmaVersion": 9
     },
     "rules": {
         "indent": [
             "error",
-            "tab"
+            2
         ],
         "linebreak-style": [
             "error",
