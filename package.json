@@ -6,7 +6,7 @@
     "main": "js/index.js",
     "license": "MIT",
     "name": "@pubcore/node-composition",
-    "version": "2.11.1",
+    "version": "2.11.2",
     "description": "composition of components served by express",
     "repository": {
         "type": "git",
