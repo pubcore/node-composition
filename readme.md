@@ -96,7 +96,7 @@ const
 	compose = require('@pubcore/node-composition').default,
 	config = require('./config.js')
 
-app.use('/', compose(config, id => require(id)))
+app.use('/', compose(config, require))
 ```
 
 ###### Configuration options
