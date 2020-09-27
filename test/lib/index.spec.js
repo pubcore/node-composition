@@ -7,7 +7,11 @@ const {mockRequire, mockApply} = require('../../mock')(require),
 
 describe('compose components by configuration', () => {
   process.env.NODE_ENV = 'development'
-  const config = {
+  const accesscontrol = {
+      allowedOrigins:['https://foo.net'],
+      contentSecurityPolicy:'default-src \'self\''
+    },
+    config = {
       components:{
         '@scope-a/component-one':{ context_path:'/one' },
         '@scope-a/component-two':{ context_path:'/two' },
@@ -21,17 +25,15 @@ describe('compose components by configuration', () => {
       componentDefault:{
         public:true
       },
-      accesscontrol:{
-        allowedOrigins:['https://foo.net'],
-        contentSecurityPolicy:'default-src \'self\''
-      }
+      accesscontrol
     },
     router = compose(config, require),
     app = express(),
+    app2 = express(),
     testFile = resolve(__dirname, 'node_modules', '@scope-a', 'component-one', 'js', 'index.js'),
     testFile2 = resolve(__dirname, 'js', 'lib', 'one.js')
   app.use(router)
-
+  app2.use(compose({...config, ...{accesscontrol:{...accesscontrol, csrfProtection:true}}}, require))
   after(() => {
     replace.sync({files:testFile, from:/number two/g, to:'one'})
     replace.sync({files:testFile2, from:/number two/g, to:'one'})
@@ -89,6 +91,16 @@ describe('compose components by configuration', () => {
   it('offers req.cookies and req.cookiesByArray object, if there are cookies', () =>
     request(app).get('/three').set('Cookie', 'foo="bar"; Jwt=one; Jwt=two;').then(
       res => expect(res.text).to.include('bar').and.to.include('"Jwt":["one","two"]')
+    )
+  )
+  it('supports Cross Site Request Forgery protection', () =>
+    request(app2).get('/one').send().then(res =>
+      expect(res).to.have.header('Set-Cookie', /__Host-Csrf-Token/)
+    )
+  )
+  it('serves 403, if CSRF protection rejects', () =>
+    request(app2).post('/one').send().then(res =>
+      expect(res).to.have.status(403)
     )
   )
 })

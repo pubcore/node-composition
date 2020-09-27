@@ -7,10 +7,12 @@ const express = require('express'),
   {dirname, join} = require('path'),
   cors = require('./lib/cors'),
   csp = require('./lib/csp'),
-  cookies = require('./lib/cookies')
+  cookies = require('./lib/cookies'),
+  csurf = require('csurf')
 
 exports.default = (config, _require) => {
   const {components, componentDefault, accesscontrol, options} = config,
+    {csrfProtection} = accesscontrol||{},
     {requestJsonLimit} = options||{},
     mapPath = ({context_path}) => ':context_path(' + context_path + ')/?',
     app = express()
@@ -19,6 +21,9 @@ exports.default = (config, _require) => {
   app.use(csp(accesscontrol))
   app.use(express.json({limit: requestJsonLimit||'100kb'}))
   app.use(cookies())
+  if(csrfProtection){
+    app.use(csurf({cookie:{key:'__Host-Csrf-Token', secure:true, sameSite:'lax'}}))
+  }
 
   var validPackages = Object.entries(components).reduce((acc, [id, comp]) => {
     try {

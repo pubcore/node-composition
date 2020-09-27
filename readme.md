@@ -132,6 +132,10 @@ module.exports = {
 
 		//see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 		contentSecurityPolicy: "default-src 'self' data:; script-src 'self' font-src https:; style-src 'unsafe-inline' https:;"
+
+		//Cross Site Request Forgery (SCRF) Protection by Double Submit Cookie Pattern (cookie name is: "__HOST-Csrf-Token")
+		//see https://github.com/expressjs/csurf
+		csrfProtection: false
 	},
 	//optional
 	options:{
@@ -168,3 +172,7 @@ export default {
 }
 ```
 2. optional "htdocs" directory contain some static files (e.g. imgage, css, js)
+
+#### References
+[CQRS protection](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
+["__Host-" cookie prefix](https://tools.ietf.org/html/draft-west-cookie-prefixes-05)
