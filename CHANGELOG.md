@@ -1,3 +1,6 @@
+## 2.12.0 2021-01-13
+* add flag (csrfProtection) to enable SCRF Protection by Double Submit Cookie
+
 ## 2.11.0 2020-05-10
 * skip invalid components, log error and serve 500 if requested
 * set ```req.resources={}```, if resources promise rejects (log error in dev mode)
