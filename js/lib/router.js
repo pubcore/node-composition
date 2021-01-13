@@ -1,7 +1,8 @@
 'use strict'
 
 const loadResources = require('./loadResources'),
-  express = require('express')
+  express = require('express'),
+  http404 = require('./http404')
 
 module.exports = (component, config) => {
   var router = express.Router(),
@@ -48,6 +49,8 @@ module.exports = (component, config) => {
       }
     )
   })
+  //last, page not found ..
+  router.use(http404)
   error && router.use(error)
   return router
 }

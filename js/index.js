@@ -1,6 +1,5 @@
 'use strict'
 const express = require('express'),
-  http404 = require('./lib/http404'),
   route = require('./lib/router'),
   merge = require('merge'),
   {existsSync, accessSync, constants:{R_OK}} = require('fs'),
@@ -62,7 +61,5 @@ exports.default = (config, _require) => {
     )})
   }
 
-  //last, page not found ..
-  app.use(http404)
   return app
 }
