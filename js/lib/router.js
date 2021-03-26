@@ -10,10 +10,13 @@ module.exports = (component, config) => {
     methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false}
 
   http.forEach(endpoint => {
-    var {routePath, map, method, accepted} = endpoint,
+    var {routePath, map, method, accepted, urlencoded=component.urlencoded} = endpoint,
       verb = method.toLowerCase()
     methods[routePath] ? methods[routePath][method] = 1
       : methods[routePath] = {[method]:1}
+
+    //support config based middleware
+    urlencoded && router[verb](routePath, express.urlencoded(urlencoded))
 
     router.all(routePath, (...args) => {
       var [req, res, next] = args

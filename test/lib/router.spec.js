@@ -9,7 +9,8 @@ const app = express(),
   error = err => {throw err},
   app2 = express(),
   app3 = express(),
-  app4 = express()
+  app4 = express(),
+  app5 = express()
 
 const config1 = { http:[
     {
@@ -76,12 +77,33 @@ const config1 = { http:[
         accepted: ['application/json'],
         public: true
       }]
-  }
+  },
+  config4 = {
+    urlencoded: {extended: true},
+    http:[
+      {
+        routePath: '/urlencoded',
+        map: (req, res) => res.send(req.body),
+        method: 'POST',
+        accepted: ['application/json'],
+        public:true
+      },
+      {
+        routePath: '/urlencoded_off',
+        map: (req, res) => res.send(req.body),
+        method: 'POST',
+        accepted: ['application/json'],
+        public:true,
+        urlencoded: null,
+      }
+    ]}
+
 app.use(router(config1))
 app2.use(router(config2))
 app2.use(http404)
 app3.use(router(config3, {foo:'bar'})),
-app4.use(router({...config3, resources:() => Promise.reject(new Error())}))
+app4.use(router({...config3, resources:() => Promise.reject(new Error())})),
+app5.use(router({...config4}))
 
 describe('component router', () => {
   it('routes requests based on component config', () => {
@@ -153,6 +175,22 @@ describe('component router', () => {
   it('supports error handler middleware', () => {
     return request(app2).get('/error').send().then(
       res => expect(res.text).to.contain('error-callback')
+    )
+  })
+  it('supports Content-Type: application/x-www-form-urlencoded', () => {
+    return request(app5).post('/urlencoded').set({
+      'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }).send('foo=bar').then(
+      res => expect(res.body).to.eql({foo:'bar'})
+    )
+  })
+  it('turns off support of urlencoded', () => {
+    return request(app5).post('/urlencoded_off').set({
+      'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }).send('foo=bar').then(
+      res => expect(res.body).to.eql({})
     )
   })
 })

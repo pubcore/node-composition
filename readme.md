@@ -47,6 +47,7 @@ component router
 	✓ removes passwort after login, for security reasons
 	✓ invokes a "resources" promise, if configured
 	✓ supports error handler middleware
+	✓ supports Content-Type: application/x-www-form-urlencoded
 ```
 
 #### Example composition
@@ -113,6 +114,10 @@ module.exports = {
 
 		//optional error handler middleware
 		error: (err, req, res, next) => {},
+
+		//optional urlencoder middleware
+		//see http://expressjs.com/de/api.html#express.urlencoded
+		urlencoded: {extended: true}
 	},
 	components: {
 		"@company/component-one":{
@@ -166,7 +171,8 @@ export default {
 			routePath: '/list',
 			map: addItem,
 			method: 'POST',
-			accepted: ['application/json']
+			accepted: ['application/json'],
+			urlencoded: {extended: true} //optional, see above
 		},
 	]
 }
