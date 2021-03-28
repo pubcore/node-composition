@@ -9,10 +9,13 @@ module.exports = (component, config={}) => {
   var router = express.Router(),
     methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false},
     {accesscontrol={}} = config,
-    {http, login, error, csrfProtection=accesscontrol.csrfProtection} = component
+    {http, login, error} = component
 
   http.forEach(endpoint => {
-    var {routePath, map, method, accepted, urlencoded=component.urlencoded} = endpoint,
+    var {routePath, map, method, accepted,
+        urlencoded=component.urlencoded,
+        csrfProtection = component.csrfProtection||accesscontrol.csrfProtection,
+      } = endpoint,
       verb = method.toLowerCase()
     methods[routePath] ? methods[routePath][method] = 1
       : methods[routePath] = {[method]:1}

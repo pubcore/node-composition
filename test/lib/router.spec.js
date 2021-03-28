@@ -210,7 +210,11 @@ describe('component router', () => {
       createApp = () => express().use(cookies(), router(
         { http:[
           endpoint,
-          {...endpoint, method:'POST'}
+          {...endpoint, method:'POST'},
+          {...endpoint,
+            method:'POST', routePath: '/public', csrfProtection:null,
+            map: (req, res) => res.send()
+          }
         ] },
         {
           accesscontrol:{
@@ -239,6 +243,11 @@ describe('component router', () => {
           request(createApp()).post('/').set('Cookie', `__Host-Csrf=${parseCookie(cookies[0])}`)
             .type('form').send({_csrf:parseCookie(cookies[1])}).then(res =>
               expect(res).to.have.status(200))
+      )
+    )
+    it('allowes to disable CSRF per endpoint', () =>
+      request(createApp()).post('/public').send().then(res =>
+        expect(res).to.have.status(200)
       )
     )
   })
