@@ -14,7 +14,17 @@ exports.default = (config, _require) => {
     {csrfProtection} = accesscontrol||{},
     {requestJsonLimit} = options||{},
     mapPath = ({context_path}) => ':context_path(' + context_path + ')/?',
-    app = express()
+    app = express(),
+    mapMiddlewares = packageName => route(
+      merge(
+        true,
+        componentDefault,
+        _require(packageName).default,
+        components[packageName],
+        {packageName}
+      ),
+      config
+    )
 
   app.use(cors(accesscontrol))
   app.use(csp(accesscontrol))
@@ -43,21 +53,14 @@ exports.default = (config, _require) => {
   if(process.env.NODE_ENV === 'development') {
     //to prune require.cache on change; load this package only in dev-mode
     require('./lib/pruneOnChange')(validPackages, _require)
-    validPackages.forEach( id => { app.use(
-      mapPath(components[id]),
-      (...args) => route(
-        //do "require" on request, to reload, if cache has been deleted
-        merge(true, componentDefault, _require(id).default, components[id], {id}),
-        config
-      )(...args)
+    validPackages.forEach( packageName => { app.use(
+      mapPath(components[packageName]),
+      (...args) => mapMiddlewares(packageName)(...args)
     )})
   }else{
-    validPackages.forEach( id => { app.use(
-      mapPath(components[id]),
-      route(
-        merge(true, componentDefault, _require(id).default, components[id], {id}),
-        config
-      )
+    validPackages.forEach( packageName => { app.use(
+      mapPath(components[packageName]),
+      mapMiddlewares(packageName)
     )})
   }
 
