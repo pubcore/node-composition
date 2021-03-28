@@ -1,3 +1,7 @@
+## 2.14.0 2021-03-28
+* support config of CSRF by composition, component and endpoint level
+* add option to configure urlencoded middleware
+
 ## 2.12.0 2021-01-13
 * add flag (csrfProtection) to enable SCRF Protection by Double Submit Cookie
 
