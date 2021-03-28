@@ -3,7 +3,10 @@ const {mockRequire, mockApply} = require('../../mock')(require),
   {expect, request} = require('chai').use(require('chai-http')),
   express = require('express'),
   replace = require('replace-in-file'),
-  {resolve} = require('path')
+  {resolve} = require('path'),
+  suppressLogs = require('mocha-suppress-logs')
+
+before (() => {suppressLogs()})
 
 describe('compose components by configuration', () => {
   process.env.NODE_ENV = 'development'

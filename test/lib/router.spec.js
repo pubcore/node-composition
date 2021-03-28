@@ -3,7 +3,10 @@
 const {expect, request} = require('chai').use(require('chai-http')),
   express = require('express'),
   router = require('../../js/lib/router'),
-  http404 = require('../../js/lib/http404')
+  http404 = require('../../js/lib/http404'),
+  suppressLogs = require('mocha-suppress-logs')
+
+before (() => {suppressLogs()})
 
 const app = express(),
   error = err => {throw err},
