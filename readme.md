@@ -12,9 +12,8 @@ A requested domain (on a specific port) is mapped to a composition.
 The purpose of this package is to support such a structure by configuration.
 
 #### Prerequisites
-* latest nodejs installed
-* latest npm installed
-* express application
+* nodejs
+* expressjs
 
 #### Auto invalidation of require-cache in development mode
 Since nodejs caches required (imported) packages, changes within a file does
@@ -24,34 +23,8 @@ This package implements __automatic invalidation of require-cache__ per
 component-package level. If a script file changes, all modules of corresponding
 component-package gets invalidated.
 
-#### Features test output
-```
-compose components by configuration
-	✓ serves requests for configured component-one functions
-	✓ serves requests for configured second "component-two"
-	✓ requires a login middleware function, if component is private
-	✓ reloads modules in development mode, if corresponding js file changed
-	✓ supports CORS - CrossOriginResourceSharing by config (allowedOrigins)
-	✓ sends CSP (Content-Security-Polcy) HTTP header, if configured
-	✓ offers req.cookies and req.cookiesByArray object, if there are cookies
-
-component router
-	✓ routes requests based on component config
-	✓ support different methods for same path
-	✓ checks accept header
-	✓ checks http method
-	✓ checks http method before login
-	✓ responses "not found" for other paths
-	✓ requires authentication, if component or function is not public
-	✓ invokes a "login" promise for private resources
-	✓ removes passwort after login, for security reasons
-	✓ invokes a "resources" promise, if configured
-	✓ supports error handler middleware
-	✓ supports Content-Type: application/x-www-form-urlencoded
-```
-
 #### Example composition
-Let's assume we compose a todo-list component together with a calendar component.  
+Let's assume we compose a todo-list component together with a calendar component.
 Composition's package directory consists of:
 ```
 config.js
@@ -94,10 +67,10 @@ server.js
 const
 	express = require('express'),
 	app = express(),
-	compose = require('@pubcore/node-composition').default,
+	composition = require('@pubcore/node-composition').default,
 	config = require('./config.js')
 
-app.use('/', compose(config, require))
+app.use('/', composition(config, require))
 ```
 
 ###### Configuration options
@@ -138,9 +111,10 @@ module.exports = {
 		//see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 		contentSecurityPolicy: "default-src 'self' data:; script-src 'self' font-src https:; style-src 'unsafe-inline' https:;"
 
-		//Cross Site Request Forgery (SCRF) Protection by Double Submit Cookie Pattern (cookie name is: "__HOST-Csrf-Token")
+		//Cross Site Request Forgery (SCRF) Protection by Double Submit Cookie Pattern
 		//see https://github.com/expressjs/csurf
-		csrfProtection: false
+		//Secure config to store token-secret by cookie:
+		csrfProtection: {key:'__Host-Csrf', secure:true, sameSite:'lax', httpOnly:true}
 	},
 	//optional
 	options:{
@@ -177,7 +151,52 @@ export default {
 	]
 }
 ```
-2. optional "htdocs" directory contain some static files (e.g. imgage, css, js)
+2. Optional, public "htdocs" directory contain some static files (e.g. imgage, css, js)  
+htdocs/
+
+#### Features test output
+```
+compose components by configuration
+	✓ serves requests for some configured component functions
+	✓ serves requests for configured second "component-two"
+	✓ requires a login middleware function, if component is private
+	✓ reloads modules in development mode, if corresponding js file changed (131ms)
+	✓ reloads modules in development mode, if corresponding js file changed (113ms)
+	✓ supports CORS - CrossOriginResourceSharing by config (allowedOrigins)
+	✓ sends CSP - Content Security Policy header, if configured
+	✓ offers req.cookies and req.cookiesByArray object, if there are cookies
+
+compose, if validation of a component fails
+	✓ should skip corresponding component and response with status 500
+
+
+compose, if environment is in PRODUCTION mode
+	✓ does not load changed module’s script file and shows same result as before
+
+component router
+	✓ routes requests based on component config
+	✓ support different methods for same path
+	✓ checks accept header
+	✓ checks http method
+	✓ checks http method before login
+dev-mode: synchronous reload for @scope-a/component-one
+dev-mode: synchronous reload for ./js/index
+	✓ responses "not found" for other paths
+	✓ requires authentication, if component or function is not public
+	✓ invokes a "login" promise for private resources
+	✓ removes passwort after login, for security reasons
+	✓ invokes a "resources" promise, if configured
+	✓ invokes a "resources" promise, if configured and use config data
+	✓ it catches up failed "resources" promise
+	✓ supports error handler middleware
+	✓ supports Content-Type: application/x-www-form-urlencoded
+	✓ supports to turn off "urlencoded" middleware endpoint specific
+	Cross Site Request Forgery protection
+		✓ response a session-secret cookie, based on config)
+		✓ serves 403, if token is invalid
+		✓ accepts valid token send by form hidden field "_csrf"
+```
+
 
 #### References
 [CQRS protection](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)

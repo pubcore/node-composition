@@ -2,6 +2,7 @@
 
 const {expect, request} = require('chai').use(require('chai-http')),
   express = require('express'),
+  cookies = require('../../js/lib/cookies'),
   router = require('../../js/lib/router'),
   http404 = require('../../js/lib/http404'),
   suppressLogs = require('mocha-suppress-logs')
@@ -188,12 +189,57 @@ describe('component router', () => {
       res => expect(res.body).to.eql({foo:'bar'})
     )
   })
-  it('turns off support of urlencoded', () => {
+  it('supports to turn off "urlencoded" middleware endpoint specific', () => {
     return request(app5).post('/urlencoded_off').set({
       'Accept': 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded'
     }).send('foo=bar').then(
       res => expect(res.body).to.eql({})
+    )
+  })
+
+  describe('Cross Site Request Forgery protection', () => {
+    var endpoint = {
+        routePath: '/',
+        //the app is responsible to handle the token, so we simulate it in next line
+        map: (req, res) => res.cookie('__Host-Csrf-Token', req.csrfToken()).send(),
+        method: 'GET',
+        public: true,
+        urlencoded:{extended:false}//required, if token is send via form post/puts as part of the request body
+      },
+      createApp = () => express().use(cookies(), router(
+        { http:[
+          endpoint,
+          {...endpoint, method:'POST'}
+        ] },
+        {
+          accesscontrol:{
+            csrfProtection:{
+              cookie: {key:'__Host-Csrf', secure:true, sameSite:'lax', httpOnly:true}
+            }
+          }
+        }
+      )),
+      parseCookie = cookieString => cookieString.match(/[^=]+=([^;]+);/)[1]
+
+    it('response a session-secret cookie, based on config)', () =>
+      request(createApp()).get('/').send().then(res =>
+        expect(res).to.have.header('Set-Cookie', /__Host-Csrf/)
+      )
+    )
+    it('serves 403, if token is invalid', () =>
+      request(createApp()).post('/').send().then(res =>
+        expect(res).to.have.status(403)
+      )
+    )
+    it('accepts valid token send by form hidden field "_csrf"', () =>
+      request(createApp()).get('/').send().then(
+        //pick the two "Double Submit Cookie" Cookies from the response
+        ({headers:{'set-cookie':cookies}}) =>
+          request(createApp()).post('/').set('Cookie', `__Host-Csrf=${parseCookie(cookies[0])}`)
+            .type('form').send({_csrf:parseCookie(cookies[1])}).then(res =>
+              expect(res).to.have.status(200))
+      )
     )
   })
 })

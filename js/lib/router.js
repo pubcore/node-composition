@@ -2,12 +2,14 @@
 
 const loadResources = require('./loadResources'),
   express = require('express'),
-  http404 = require('./http404')
+  http404 = require('./http404'),
+  csurf = require('csurf')
 
-module.exports = (component, config) => {
+module.exports = (component, config={}) => {
   var router = express.Router(),
-    {http, login, error} = component,
-    methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false}
+    methods = {GET:false, POST:false, DELETE:false, PUT:false, HEAD:false},
+    {accesscontrol={}} = config,
+    {http, login, error, csrfProtection=accesscontrol.csrfProtection} = component
 
   http.forEach(endpoint => {
     var {routePath, map, method, accepted, urlencoded=component.urlencoded} = endpoint,
@@ -17,6 +19,7 @@ module.exports = (component, config) => {
 
     //support config based middleware
     urlencoded && router[verb](routePath, express.urlencoded(urlencoded))
+    csrfProtection && router[verb](routePath, csurf(csrfProtection))
 
     router.all(routePath, (...args) => {
       var [req, res, next] = args
