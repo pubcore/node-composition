@@ -45,6 +45,12 @@ describe('compose components by configuration', () => {
       res => expect(res.text).to.contain('one')
     )
   )
+  it('adds "component" to request object', () =>
+    request(app).get('/two/component').set('Accept', 'application/json').send().then(
+      res => expect(res.body).to.have.all.keys('id', 'http', 'context_path', 'public'),
+      err => {throw err}
+    )
+  )
   it('serves requests for configured second "component-two"', () =>
     request(app).get('/two').set('Accept', 'application/json').send().then(
       res => expect(res.text).to.contain('two')

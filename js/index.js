@@ -19,7 +19,7 @@ exports.default = (config, _require) => {
         componentDefault,
         _require(packageName).default,
         components[packageName],
-        {packageName}
+        {id:packageName}
       ),
       config
     )
